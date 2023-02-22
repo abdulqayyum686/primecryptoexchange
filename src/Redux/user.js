@@ -4,6 +4,7 @@ import { successMessage, errorMessage } from "../utils/message";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const initialState = {
+  token: "",
   currentUser: null,
   getUserRewards: [],
   allUsers: [],
@@ -102,11 +103,30 @@ export const getAdminDefaultPer = createAsyncThunk(
   }
 );
 //post requests
-export const userSignUp = createAsyncThunk("userSignUp", async (formData) => {
+export const userSignUp = createAsyncThunk(
+  "userSignUp",
+  async (formData, navigate) => {
+    try {
+      const res = await axiosInstance.post(`/api/user/register`, formData);
+      if (res.status === 200) {
+        successMessage("User successfully registered");
+        console.log(res);
+        navigate("/login");
+        // return res;
+      }
+    } catch (err) {
+      console.log(err);
+      errorMessage(err.response.data || err.message);
+    }
+  }
+);
+
+export const userSignIn = createAsyncThunk("userSignIn", async (formData) => {
   try {
-    const res = await axiosInstance.post(`/api/user/register`, formData);
+    const res = await axiosInstance.post(`/api/user/login`, formData);
     if (res.status === 200) {
-      successMessage("User successfully registered");
+      successMessage("User successfully Login");
+      console.log(res.data);
       // return res.data.user;
     }
   } catch (err) {
@@ -114,6 +134,7 @@ export const userSignUp = createAsyncThunk("userSignUp", async (formData) => {
     errorMessage(err.response.data || err.message);
   }
 });
+
 export const uerLelevRewards = createAsyncThunk(
   "uerLelevRewards",
   async (formData) => {
@@ -216,6 +237,12 @@ export const userReducer = createSlice({
       state.isloading = false;
     },
     [userSignUp.pending]: (state, action) => {
+      state.isloading = true;
+    },
+    [userSignIn.fulfilled]: (state, action) => {
+      state.isloading = false;
+    },
+    [userSignIn.pending]: (state, action) => {
       state.isloading = true;
     },
   },
