@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import {  useDispatch } from 'react-redux';
+import { userSignUp } from "../../Redux/user";
 import {
 	loadingToggleAction,
 	signupAction,
@@ -59,7 +60,8 @@ function Register(props) {
 			password: password
 		}
 		dispatch(loadingToggleAction(true));
-		dispatch(signupAction(payload, navigate));
+		dispatch(userSignUp(payload));
+		navigate('/login');
 	}
 
 	return (

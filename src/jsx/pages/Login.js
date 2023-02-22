@@ -9,6 +9,7 @@ import {
 import logo from '../../images/logo/logo-full.png'
 import logoPrime from "../../images/logo/logo-prime.png"
 import bg6 from '../../images/background/bg6.jpg';
+import { userSignIn } from '../../Redux/user';
 
 function Login(props) {
 	const [heartActive, setHeartActive] = useState(true);
@@ -36,9 +37,14 @@ function Login(props) {
 		if (error) {
 			return;
 		}
+		const payload = {
+			email:email,
+			password: password
+		}
 
 		dispatch(loadingToggleAction(true));
-		dispatch(loginAction(email, password, navigate));
+		dispatch(userSignIn(payload));
+		navigate('/dashboard');
 	}
 
 
