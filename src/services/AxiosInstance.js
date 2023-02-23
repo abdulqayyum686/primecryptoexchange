@@ -5,8 +5,7 @@ const cookies = new Cookies();
 axios.defaults.headers.authorization = cookies.get("token");
 
 const axiosInstance = axios.create({
-  baseURL: `https://test.logicsyard.com/`,
-  // baseURL: `http://localhost:5000/`,
+  baseURL: `http://localhost:8000/`,
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "*",
   "Access-Control-Allow-Headers":

@@ -160,13 +160,7 @@ const Markup = () => {
     {url:"/tradehistory", component: <TradeHistory />},
     {url:"/transactionhistory", component: <TransactionHistory />},
 
-
-
-
-
-
     /// Dashboard
-    { url: "", component: <Home /> },
     { url: "dashboard", component: <Home /> },
     { url: "dashboard-dark", component: <DashboardDark /> },
     { url: "index-1", component: <Dashboard2 /> },
@@ -258,7 +252,7 @@ const Markup = () => {
     { url: "map-jqvmap", component: <JqvMap /> },
     { url: "uc-lightgallery", component: <Lightgallery /> },
     //Admin
-    // { url: "admin-dashboard", component: <AdminDashboard /> },
+    { url: "admin-dashboard", component: <AdminDashboard /> },
 //
 	/////Redux
 	//{ url: "todo", component: Todo },	
@@ -298,6 +292,18 @@ const Markup = () => {
 
   return (
     <>
+          {/* {coinReducer.isLoading && (
+        <div className="loader">
+          <RotatingLines
+            strokeColor="#3eacff"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="70"
+            visible={true}
+          />
+        </div>
+      )} */}
+
         <Routes>
             <Route path='page-lock-screen' element= {<LockScreen />} />
             <Route path='page-error-400' element={<Error400/>} />

@@ -9,8 +9,8 @@ import cryptoicons from "../../../../images/cryptoIcons/cryptoImg";
 import bitcoin from "../../../../images/coins/btc.png"
 import TradeOrderForm from "./TradeOrderForm";
 import { connect, useDispatch } from "react-redux";
-import { change1hAction, getCoinMarketAction } from "../../../../store/actions/CoinMarketActions";
-import { addWatchlistAction } from "../../../../store/actions/WatchlistAction";
+// import { change1hAction, getCoinMarketAction } from "../../../../store/actions/CoinMarketActions";
+// import { addWatchlistAction } from "../../../../store/actions/WatchlistAction";
 let columns = [
     { label: 'Markets', columnName: 'markets', sort: true },
     { label: 'Price', columnName: 'price', sort: true },
@@ -19,14 +19,15 @@ let columns = [
     { label: 'Action', columnName: 'action', sort: false },
 
 ]
-const DataTable = ( props) => {
+const DataTable = ( ) => {
     const [data, setData] = useState(
         document.querySelectorAll("#market_wrapper tbody tr")
         // rows
     );
-    const [rows,setRows] = useState(props.coinMarket)
+    const [rows,setRows] = useState()
     const dispatch = useDispatch()
     const [largeModal, setLargeModal] = useState(false)
+    const [modalCurrentData, setModalCurrentData] = useState()
     const [noSl, setNoSl] = useState(true)
     const navigate = useNavigate();
     const sort = 6;
@@ -36,9 +37,10 @@ const DataTable = ( props) => {
     const buyNow = (value) => {
         console.log("row clicked", value)
         // navigate("/coin-details")
+        setModalCurrentData(value)
         setLargeModal(true)
     }
-
+console.log("modalCurrentData",modalCurrentData);
     // Active data
     const chageData = (frist, sec) => {
         for (var i = 0; i < data.length; ++i) {
@@ -123,14 +125,14 @@ const DataTable = ( props) => {
     }
     const addToWatchlist = (item) =>{
         console.log("item", item)
-        dispatch(addWatchlistAction(item.name))
+        // dispatch(addWatchlistAction(item.name))
     }
     useEffect(()=>{
         // if(change1h){
         //     console.log("hi")
         // dispatch(change1hAction())
         // }
-        dispatch(getCoinMarketAction())
+        // dispatch(getCoinMarketAction())
 
     },[])
     return (
@@ -185,35 +187,37 @@ const DataTable = ( props) => {
 
                                 </thead>
                                 <tbody >
-                                    {rows && sortData(rows, sortD.columnName, sortD.sortType).map((item, index) => (
+                                    {/* {rows && sortData(rows, sortD.columnName, sortD.sortType).map((item, index) => ( */}
+                                    {["","",""].map((item, index) => (
                                         <tr key={index} >
                                             <td style={{ width: '30%' }}>
                                                 <div className="market-title d-flex align-items-center "  >
-                                                    <img src={cryptoicons[item.symbol]} width="12%" />
+                                                    {/* <img src={cryptoicons[item.symbol]} width="12%" /> */}
                                                     <Col>
                                                         <h5 className="mb-0 ms-2">
-                                                            {item.symbol}
+                                                            {/* {item.symbol} */}
                                                         </h5>
                                                         <span className="text-muted ms-2" >
-                                                            {item.name}
+                                                            {"item.name"}
                                                         </span>
                                                     </Col>
                                                 </div>
                                             </td>
-                                            <td className="text-center" style={{ color: item.price.replace(/,/g, '') > 0 ? "green" : "red", }}>${item.price}</td>
-                                            <td className="text-center" style={{ color: item.change > 0 ? "green" : "red", }}>{item.change}%</td>
+                                            {/* <td className="text-center" style={{ color: item?.price.replace(/,/g, '') > 0 ? "green" : "red", }}>${"item.price"}</td>
+                                            <td className="text-center" style={{ color: item?.change > 0 ? "green" : "red", }}>{"item.change"}%</td> */}
+                                            <td className="text-center" >${"item.price"}</td>
+                                            <td className="text-center" >{"item.change"}%</td>
                                             <td className="text-center">
                                                 <Button style={{ backgroundColor: '#3eacff', }} className="btn-sm" onClick={() => buyNow(item)}>Buy Now</Button>
                                             </td>
                                             <td className="text-center">
                                                 <Button style={{ backgroundColor: 'black', }} className="btn-sm text-white" onClick={() => addToWatchlist(item)}>Add to WatchList</Button>
                                             </td>
-
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                            <div className="d-sm-flex text-center justify-content-between align-items-center mt-3 mb-3">
+                            {/* <div className="d-sm-flex text-center justify-content-between align-items-center mt-3 mb-3">
                                 <div className="dataTables_info">
                                     Showing {activePag.current * sort + 1} to{" "}
                                     {data.length > (activePag.current + 1) * sort
@@ -258,7 +262,7 @@ const DataTable = ( props) => {
                                         <i className="fa fa-angle-double-right" ></i>
                                     </Link>
                                 </div>
-                            </div>
+                            </div> */}
 
                         </div>
                     </div>

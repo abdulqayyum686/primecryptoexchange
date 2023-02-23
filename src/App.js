@@ -46,23 +46,24 @@ function App(props) {
   const userReducer = useSelector((store) => store.userReducer);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = cookies.get("token");
-    if (token) {
-      const user = jwt_decode(token);
-      axiosInstance
-        .get(`/api/user/${user?.id}`)
-        .then((res) => {
-          // dispatch(setCurrentUser(res?.data));
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    } else {
-      navigate("/login");
-    }
-  }, []);
-  if (userReducer?.currentUser && userReducer?.currentUser !== null) {
+  // useEffect(() => {
+  //   const token = cookies.get("token");
+  //   if (token) {
+  //     const user = jwt_decode(token);
+  //     axiosInstance
+  //       .get(`/api/user/${user?.id}`)
+  //       .then((res) => {
+  //         // dispatch(setCurrentUser(res?.data));
+  //       })
+  //       .catch((e) => {
+  //         console.log(e);
+  //       });
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // }, []);
+  // if (userReducer?.currentUser && userReducer?.currentUser !== null) {
+  if (false) {
     return (
       <>
         <Suspense
@@ -94,6 +95,18 @@ function App(props) {
             </div>
           }
         >
+          {/* {coinReducer.isLoading && (
+        <div className="loader">
+          <RotatingLines
+            strokeColor="#3eacff"
+            strokeWidth="5"
+            animationDuration="0.75"
+            width="70"
+            visible={true}
+          />
+        </div>
+      )} */}
+
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/page-register" element={<SignUp />} />
