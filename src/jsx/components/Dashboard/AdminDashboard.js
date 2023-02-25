@@ -6,8 +6,11 @@ import { Card, Col, Dropdown, Nav, Row, Tab } from 'react-bootstrap';
 //Import Components
 import { ThemeContext } from "../../../context/ThemeContext";
 import DataTable from '../CustomComponent/HomeTable';
+import DataDepositTable from '../CustomComponent/DepositTable';
 import ReactApexChart from 'react-apexcharts';
 import WidgetChartIndex3 from './Index3/WidgetChartIndex3';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllDepositRequest } from '../../../Redux/coins';
 
 const rows = [
 	{sno:"abc",datetime:Date.now(),status:'up',type:'abc',amount:123 },
@@ -25,6 +28,17 @@ let columns = [
 	{ label: 'Amount', columnName: 'amount', sort: true },
 
 ]
+
+let Depositcolumns = [
+	{ label: 'S.No' },
+	{ label: 'Amount'},
+	{ label: 'Status' },
+	{ label: 'Decsription' },
+	{ label: 'Date'},
+	{ label: 'Action' },
+
+
+]
 const widgetChart = [
     {id:1, price:'$65,123', bgcolor:''},
     {id:2, price:'$75,542',bgcolor:''},
@@ -34,6 +48,22 @@ const widgetChart = [
 
 
 const AdminDashboard = () => {
+	const dispatch = useDispatch();
+	const requests = useSelector(state => state.coinReducer);
+
+const filterData =(data, type) => {
+	const filteredData = data.filter((item) => item.status === type);
+	return filteredData;
+};
+	 const getData = async () => {
+		const res = await dispatch(getAllDepositRequest());
+		
+		console.log(res);
+        
+    }
+	useEffect(() => {
+		getData();
+	}, []);
 	var state = {
 		series: [
 			{
@@ -226,6 +256,7 @@ const AdminDashboard = () => {
 						<Col xl="8">
 							<DataTable header="Transaction History" rows={rows} columns={columns} />
 						</Col>
+						
 						<Col xl="4">
 							<Card>
 								<Card.Body>
@@ -239,6 +270,11 @@ const AdminDashboard = () => {
 									</div>
 								</Card.Body>
 							</Card>
+						</Col>
+					</Row>
+					<Row>
+						<Col xl="8">
+							<DataDepositTable header="Deposit Request" rows={filterData(requests.data,"pending")} columns={Depositcolumns} />
 						</Col>
 					</Row>
 				</div>

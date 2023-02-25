@@ -7,8 +7,9 @@ const initialState = {
   currentUser: null,
   getUserRewards: [],
   allUsers: [],
+  getUserWallet: 0,
   getAdminDefaultPer: {},
-  isloading: false,
+  isloading: false, 
 };
 // get requests
 // export const allUsers = createAsyncThunk("allUsers", async () => {
@@ -49,6 +50,36 @@ export const userSignUp = createAsyncThunk("userSignUp", async (formData) => {
   }
 });
 
+export const userLogin = createAsyncThunk("userLogin", async (formData) => {
+  console.log("formDataLogin", formData);
+  try {
+    const res = await axiosInstance.post(`/api/user/login`, formData);
+    if (res.status === 200) {
+      successMessage("User successfully logedin");
+      return res.data;
+      // return res.data.user;
+    }
+  } catch (err) {
+    console.log(err);
+    errorMessage(err.response.data || err.message);
+  }
+});
+// get wallet
+export const getUserWallet = createAsyncThunk(
+  "getUserWallet",
+  async (userId) => {
+    try {
+      const res = await axiosInstance.get(`/api/wallet/${userId}`);
+      if (res.status === 200) {
+       // console.log(res.data, "wallet data");
+        return res.data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
 //update Requests
 // export const updateUserLevel = createAsyncThunk(
 //   "updateUserLevel",
@@ -87,6 +118,28 @@ export const userReducer = createSlice({
     [userSignUp.pending]: (state, action) => {
       state.isloading = true;
     },
+
+    [userLogin.fulfilled]: (state, action) => { 
+      state.isloading = false;
+      //state.token = action.payload.token;
+      console.log(action.payload);
+    },
+    [userLogin.pending]: (state, action) => {
+      state.isloading = true;
+    },
+    [getUserWallet.fulfilled]: (state, action) => {
+      state.isloading = false;
+      state.getUserWallet = action.payload.balance;
+      console.log("balance", action.payload.balance);
+    },
+    [getUserWallet.pending]: (state, action) => {
+      state.isloading = true;
+    },
+    [getUserWallet.rejected]: (state, action) => {
+      state.isloading = false;
+      console.log("rejected", action);
+    },
+
   },
 });
 // Action creators are generated for each case reducer function

@@ -13,7 +13,8 @@ export function signUp(payload) {
     };
     return axios.post(
         // `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD3RPAp3nuETDn9OQimqn_YF6zdzqWITII`,
-        "https://prime-exchange.cyclic.app/api/user/register",
+      //  "https://prime-exchange.cyclic.app/api/user/register",
+        "http://localhost:8000/api/user/register",
         postData,
     );
 }
@@ -26,7 +27,7 @@ export function login(email, password) {
     };
     return axios.post(
         // `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyD3RPAp3nuETDn9OQimqn_YF6zdzqWITII`,
-        "https://prime-exchange.cyclic.app/api/user/login",
+        "http://localhost:8000/api/user/login",
         postData,
     );
 }

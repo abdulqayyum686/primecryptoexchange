@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
   loadingToggleAction,
@@ -64,6 +64,7 @@ function Register(props) {
     setErrors(errorObj);
     if (error) return;
     dispatch(userSignUp(user));
+    navigate("/login");
   }
 
   return (

@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "universal-cookie";
 import jwt_decode from "jwt-decode";
 import axiosInstance from "./services/AxiosInstance";
+import { setCurrentUser } from "./Redux/user";
 
 const SignUp = lazy(() => import("./jsx/pages/Registration"));
 const ForgotPassword = lazy(() => import("./jsx/pages/ForgotPassword"));
@@ -46,24 +47,25 @@ function App(props) {
   const userReducer = useSelector((store) => store.userReducer);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const token = cookies.get("token");
-  //   if (token) {
-  //     const user = jwt_decode(token);
-  //     axiosInstance
-  //       .get(`/api/user/${user?.id}`)
-  //       .then((res) => {
-  //         // dispatch(setCurrentUser(res?.data));
-  //       })
-  //       .catch((e) => {
-  //         console.log(e);
-  //       });
-  //   } else {
-  //     navigate("/login");
-  //   }
-  // }, []);
-  // if (userReducer?.currentUser && userReducer?.currentUser !== null) {
-  if (false) {
+  useEffect(() => {
+    const token = cookies.get("token");
+    if (token) {
+      const user = jwt_decode(token);
+      axiosInstance
+        .get(`/api/user/${user?.id}`)
+        .then((res) => {
+          console.log(res?.data, "res?.data");
+           dispatch(setCurrentUser(res?.data));
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } else {
+      navigate("/login");
+    }
+  }, []);
+  if (userReducer?.currentUser && userReducer?.currentUser !== null) {
+  //if (false)
     return (
       <>
         <Suspense

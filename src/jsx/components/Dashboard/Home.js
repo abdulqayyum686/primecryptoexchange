@@ -2,12 +2,15 @@ import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { Link } from 'react-router-dom';
 //import {NavLink} from 'react-router-dom';
 import { Card, Col, Dropdown, Nav, Row, Tab } from 'react-bootstrap';
-
+import Cookies from "universal-cookie";
+import jwt_decode from "jwt-decode";
+import { useDispatch, useSelector } from 'react-redux';
 //Import Components
 import { ThemeContext } from "../../../context/ThemeContext";
 import DataTable from '../CustomComponent/HomeTable';
 import ReactApexChart from 'react-apexcharts';
 import WidgetChartIndex3 from './Index3/WidgetChartIndex3';
+import { getUserWallet } from '../../../Redux/user';
 
 const rows = [
 	{sno:"abc",datetime:Date.now(),status:'up',type:'abc',amount:123 },
@@ -33,7 +36,25 @@ const widgetChart = [
 ];
 
 
+
+
+
 const Home = () => {
+	const cookies = new Cookies();
+	const dispatch = useDispatch();
+	const token = cookies.get("token");
+	const user = jwt_decode(token);
+	const id = user.id;
+	//use s
+	const requests = useSelector(state => state.userReducer);
+	//console.log(requests, "requests");
+	
+	useEffect(() => {
+		dispatch(getUserWallet(id));
+	}, []);
+
+
+
 	var state = {
 		series: [
 			{
@@ -191,7 +212,7 @@ const Home = () => {
 											<Card className="border bg-white">
 												<Card.Body className="d-flex justify-content-center">
 													<Card.Text>
-														<h4>$0.00</h4>
+														<h4>{requests.getUserWallet}</h4>
 														<p>Available</p>
 													</Card.Text>
 												</Card.Body>

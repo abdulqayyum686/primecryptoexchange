@@ -4,15 +4,19 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
 	loadingToggleAction, loginAction,
 } from '../../store/actions/AuthActions';
-
+import axios from 'axios';
+import axiosInstance from '../../services/AxiosInstance';
+import Cookies from "universal-cookie";
+import jwt_decode from "jwt-decode";
 
 import logo from '../../images/logo/logo-full.png'
 import logoPrime from "../../images/logo/logo-prime.png"
 import bg6 from '../../images/background/bg6.jpg';
+import { setCurrentUser, userLogin } from '../../Redux/user';
 
 function Login(props) {
 	const [heartActive, setHeartActive] = useState(true);
-
+	const cookies = new Cookies();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState('demo@example.com');
 	let errorsObj = { email: '', password: '' };
@@ -20,7 +24,7 @@ function Login(props) {
 	const [password, setPassword] = useState('123456');
 	const dispatch = useDispatch();
 
-	function onLogin(e) {
+	async function onLogin(e) {
 		e.preventDefault();
 		let error = false;
 		const errorObj = { ...errorsObj };
@@ -36,10 +40,35 @@ function Login(props) {
 		if (error) {
 			return;
 		}
+		let data = {
+			email: email,
+			password: password
+		}
+		const res = await dispatch(userLogin(data));
 
-		dispatch(loadingToggleAction(true));
-		dispatch(loginAction(email, password, navigate));
-	}
+		console.log(res, "res1");
+console.log(res?.payload?.status, "status")
+		if(res.payload.status){
+
+		axios.defaults.headers.authorization = res?.payload?.access;
+          axiosInstance.defaults.headers.authorization = res?.payload?.access;
+          const user = jwt_decode(res?.payload?.access);
+          const token = res?.payload?.access;
+          console.log(user, "user");
+          console.log(token, "token");
+          cookies.set("token", token);
+		  dispatch(setCurrentUser(user));
+		  if(user?.is_admin){
+			navigate("/admin-dashboard");
+		  }
+		  else{
+		  navigate("/dashboard");
+		  }
+
+
+		// dispatch(loadingToggleAction(true));
+		// dispatch(loginAction(email, password, navigate));
+	}}
 
 
 	return (

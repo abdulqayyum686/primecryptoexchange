@@ -8,7 +8,8 @@ import cryptoicons from "../../../../images/cryptoIcons/cryptoImg";
 
 import bitcoin from "../../../../images/coins/btc.png"
 import TradeOrderForm from "./TradeOrderForm";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { getAllCoin } from "../../../../Redux/coins";
 // import { change1hAction, getCoinMarketAction } from "../../../../store/actions/CoinMarketActions";
 // import { addWatchlistAction } from "../../../../store/actions/WatchlistAction";
 let columns = [
@@ -26,6 +27,7 @@ const DataTable = ( ) => {
     );
     const [rows,setRows] = useState()
     const dispatch = useDispatch()
+    const [percentage, setPercentage]= useState("percent_change_24h")
     const [largeModal, setLargeModal] = useState(false)
     const [modalCurrentData, setModalCurrentData] = useState()
     const [noSl, setNoSl] = useState(true)
@@ -94,32 +96,29 @@ console.log("modalCurrentData",modalCurrentData);
         });
     };
     const change1h = () =>{
-        setRows((prev)=>prev.map((element) => {
-            return {
-                ...element,
-                change: element.percent_change_1h
-            };
-        }))
+       setPercentage("percent_change_1h")
         columns[2].label = "Change 1h"
 
     }
     const change24h = () =>{
-        setRows((prev)=>prev.map((element) => {
-            return {
-                ...element,
-                change: element.percent_change_24h
-            };
-        }))
-        columns[2].label = "Change 24h"
+        setPercentage("percent_change_24h")
+        columns[2].label = "Change 1h"
 
     }
+    const returnValue = (item) =>{
+        if(percentage === "percent_change_1h"){
+            return item.percent_change_1h
+        }
+        else if(percentage === "percent_change_24h"){
+            return item.percent_change_24h
+        }
+        else if(percentage === "percent_change_7d"){
+            return item.percent_change_7d
+        }
+    }
+
     const change7d = () =>{
-        setRows((prev)=>prev.map((element) => {
-            return {
-                ...element,
-                change: element.percent_change_7d
-            };
-        }))
+        setPercentage("percent_change_7d")
         columns[2].label = "Change 7d"
 
     }
@@ -127,7 +126,37 @@ console.log("modalCurrentData",modalCurrentData);
         console.log("item", item)
         // dispatch(addWatchlistAction(item.name))
     }
+    const requests = useSelector(state => state.coinReducer);
+    const getData = async () => {
+		const res = await dispatch(getAllCoin())
+		console.log(requests, "requests");
+		console.log(res, "res");
+        
+    }
+    const [inputValue, setInputValue] = useState();
+    const [units, setUnits] = useState();
+    const [inputId, setInputId] = useState("price");
+
+    const handleChange = (e) => {
+        
+        setInputValue(e.target.value);
+    };
+    const handleClick = (price) => {
+        if(inputId==="price"){
+            setInputId("units");
+            const newValue= inputValue / price;
+        setInputValue(newValue);
+        }
+        else{
+            setInputId("price");
+            const newValue= inputValue * price;
+        setInputValue(newValue);
+        }
+        
+    };
+
     useEffect(()=>{
+        getData()
         // if(change1h){
         //     console.log("hi")
         // dispatch(change1hAction())
@@ -188,7 +217,7 @@ console.log("modalCurrentData",modalCurrentData);
                                 </thead>
                                 <tbody >
                                     {/* {rows && sortData(rows, sortD.columnName, sortD.sortType).map((item, index) => ( */}
-                                    {["","",""].map((item, index) => (
+                                    {requests.coinData.map((item, index) => (
                                         <tr key={index} >
                                             <td style={{ width: '30%' }}>
                                                 <div className="market-title d-flex align-items-center "  >
@@ -198,15 +227,15 @@ console.log("modalCurrentData",modalCurrentData);
                                                             {/* {item.symbol} */}
                                                         </h5>
                                                         <span className="text-muted ms-2" >
-                                                            {"item.name"}
+                                                            {item.name}
                                                         </span>
                                                     </Col>
                                                 </div>
                                             </td>
                                             {/* <td className="text-center" style={{ color: item?.price.replace(/,/g, '') > 0 ? "green" : "red", }}>${"item.price"}</td>
                                             <td className="text-center" style={{ color: item?.change > 0 ? "green" : "red", }}>{"item.change"}%</td> */}
-                                            <td className="text-center" >${"item.price"}</td>
-                                            <td className="text-center" >{"item.change"}%</td>
+                                            <td className="text-center" >${item.price}</td>
+                                            <td className="text-center" >{returnValue(item)}%</td>
                                             <td className="text-center">
                                                 <Button style={{ backgroundColor: '#3eacff', }} className="btn-sm" onClick={() => buyNow(item)}>Buy Now</Button>
                                             </td>
@@ -298,10 +327,10 @@ console.log("modalCurrentData",modalCurrentData);
                                                     </Col>
                                                     <Col>
 
-                                                        <h4 className="mb-0">Buy BTC</h4>
+                                                        <h4 className="mb-0">{modalCurrentData?.name}</h4>
                                                         <Row >
                                                             <div className="d-flex justify-content-start mb-0">
-                                                                <p className="mb-0" style={{ fontSize: '20px' }}><h3 className="mb-0">2223.47</h3></p>
+                                                                <p className="mb-0" style={{ fontSize: '20px' }}><h3 className="mb-0">{modalCurrentData?.price}</h3></p>
                                                                 <span style={{ marginTop: '0.7rem' }} className="text-green mb-0">650.89[3.04%]</span>
                                                             </div>
                                                             <span className="mb-0">Price by PrimeCrypto</span>
@@ -320,13 +349,16 @@ console.log("modalCurrentData",modalCurrentData);
                                                         <form>
                                                             <div className="input-group ">
                                                                 <span className="input-group-text text-black" >-</span>
-                                                                <input type="text" className="form-control" />
+                                                                {/* <input type="text" className="form-control" value={inputValue}/> */}
+                                                                <input type="text" className="form-control" id={inputId} value={inputValue} onChange={(e)=>setInputValue(e.target.value)}/>
                                                                 <span className="input-group-text text-black">+</span>
                                                             </div>
                                                         </form>
                                                     </Col>
                                                     <Col>
-                                                        <Button style={{ backgroundColor: '#3eacff', height: "3rem" }} className='btn btn-sm'><i className="material-icons">swap_horiz</i></Button>
+                                                        {/* <Button style={{ backgroundColor: '#3eacff', height: "3rem" }} className='btn btn-sm'><i className="material-icons">swap_horiz</i></Button> */}
+                                                        <Button style={{ backgroundColor: '#3eacff', height: "3rem" }} className='btn btn-sm' onClick={()=>handleClick(modalCurrentData.price)}><i className="material-icons">swap_horiz</i></Button>
+
                                                     </Col>
                                                     <Col xl={1}></Col>
                                                 </Row>
