@@ -112,6 +112,8 @@ export const getAllCoin = createAsyncThunk("getAllCoin", async () => {
     }
   );
 
+  //create trade
+
 // post requests
 // export const solidToStandExchange = createAsyncThunk(
 //   "solidToStandExchange",

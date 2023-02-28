@@ -9,7 +9,9 @@ import cryptoicons from "../../../../images/cryptoIcons/cryptoImg";
 import bitcoin from "../../../../images/coins/btc.png"
 import TradeOrderForm from "./TradeOrderForm";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { getAllCoin } from "../../../../Redux/coins";
+import { createTrade, getAllCoin } from "../../../../Redux/coins";
+import Cookies from "universal-cookie";
+import jwt_decode from "jwt-decode";
 // import { change1hAction, getCoinMarketAction } from "../../../../store/actions/CoinMarketActions";
 // import { addWatchlistAction } from "../../../../store/actions/WatchlistAction";
 let columns = [
@@ -35,6 +37,26 @@ const DataTable = ( ) => {
     const sort = 6;
     const activePag = useRef(0);
     const [test, settest] = useState(0);
+
+    const cookies = new Cookies();
+	const token = cookies.get("token");
+	const user = jwt_decode(token);
+	const id = user.id;
+    const [newInvestment, setNewInvestment] = useState(0)
+    const openTrade = (value) => {
+
+
+        let body = {
+            user_id:id,
+            crypto_name: modalCurrentData.name,
+            crypto_symbol:modalCurrentData.symbol,
+            crypto_purchase_price:modalCurrentData.price,
+            investment: inputId === "price" ? inputValue : inputValue * modalCurrentData.price,
+        }
+        console.log("body of trade",body);
+       const res= dispatch(createTrade(body));
+       console.log("res of trade",res);
+    }
 
     const buyNow = (value) => {
         console.log("row clicked", value)
@@ -134,7 +156,6 @@ console.log("modalCurrentData",modalCurrentData);
         
     }
     const [inputValue, setInputValue] = useState();
-    const [units, setUnits] = useState();
     const [inputId, setInputId] = useState("price");
 
     const handleChange = (e) => {
@@ -427,7 +448,7 @@ console.log("modalCurrentData",modalCurrentData);
                                                                                     <form>
                                                                                         <div className="input-group ">
                                                                                             <span className="input-group-text text-black" >-</span>
-                                                                                            <input type="text" className="form-control" />
+                                                                                            <input type="text"  className="form-control" />
                                                                                             <span className="input-group-text text-black">+</span>
                                                                                         </div>
                                                                                     </form>
@@ -463,7 +484,7 @@ console.log("modalCurrentData",modalCurrentData);
                     <Button
                         style={{ backgroundColor: '#3eacff', width: '100%' }}
                         className="btn btn-large"
-                        onClick={() => setLargeModal(false)}
+                        onClick={() => openTrade()}
                     >
                         Open Trade
                     </Button>
