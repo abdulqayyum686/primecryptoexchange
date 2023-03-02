@@ -27,7 +27,6 @@ const DataTable = ( ) => {
         document.querySelectorAll("#market_wrapper tbody tr")
         // rows
     );
-    const [rows,setRows] = useState()
     const dispatch = useDispatch()
     const [percentage, setPercentage]= useState("percent_change_24h")
     const [largeModal, setLargeModal] = useState(false)
@@ -57,7 +56,7 @@ const DataTable = ( ) => {
        const res= dispatch(createTrade(body));
        console.log("res of trade",res);
     }
-
+    
     const buyNow = (value) => {
         console.log("row clicked", value)
         // navigate("/coin-details")
@@ -127,6 +126,11 @@ console.log("modalCurrentData",modalCurrentData);
         columns[2].label = "Change 1h"
 
     }
+    const change7d = () =>{
+        setPercentage("percent_change_7d")
+        columns[2].label = "Change 7d"
+
+    }
     const returnValue = (item) =>{
         if(percentage === "percent_change_1h"){
             return item.percent_change_1h
@@ -139,16 +143,13 @@ console.log("modalCurrentData",modalCurrentData);
         }
     }
 
-    const change7d = () =>{
-        setPercentage("percent_change_7d")
-        columns[2].label = "Change 7d"
-
-    }
     const addToWatchlist = (item) =>{
         console.log("item", item)
         // dispatch(addWatchlistAction(item.name))
     }
     const requests = useSelector(state => state.coinReducer);
+    
+
     const getData = async () => {
 		const res = await dispatch(getAllCoin())
 		console.log(requests, "requests");
@@ -228,7 +229,6 @@ console.log("modalCurrentData",modalCurrentData);
                                                         }
                                                     </span>
                                                 ) : null}
-
                                             </th>
 
                                         ))}
@@ -237,12 +237,12 @@ console.log("modalCurrentData",modalCurrentData);
 
                                 </thead>
                                 <tbody >
-                                    {/* {rows && sortData(rows, sortD.columnName, sortD.sortType).map((item, index) => ( */}
-                                    {requests.coinData.map((item, index) => (
+                                    { requests.coinData && sortData(requests.coinData, sortD.columnName, sortD.sortType).map((item, index) => (
+                                    // {/* {requests.coinData.map((item, index) => ( */}
                                         <tr key={index} >
                                             <td style={{ width: '30%' }}>
                                                 <div className="market-title d-flex align-items-center "  >
-                                                    {/* <img src={cryptoicons[item.symbol]} width="12%" /> */}
+                                                    <img src={cryptoicons[item.symbol]} width="12%" />
                                                     <Col>
                                                         <h5 className="mb-0 ms-2">
                                                             {/* {item.symbol} */}
@@ -265,6 +265,7 @@ console.log("modalCurrentData",modalCurrentData);
                                             </td>
                                         </tr>
                                     ))}
+                                    
                                 </tbody>
                             </table>
                             {/* <div className="d-sm-flex text-center justify-content-between align-items-center mt-3 mb-3">
@@ -344,7 +345,7 @@ console.log("modalCurrentData",modalCurrentData);
                                             <Card.Header>
                                                 <Row>
                                                     <Col xl={2}>
-                                                        <img src={bitcoin} width="100%" />
+                                                        <img src={cryptoicons[modalCurrentData?.symbol]} width="100%" />
                                                     </Col>
                                                     <Col>
 

@@ -6,8 +6,13 @@ import { useRef } from "react";
 import { Button, Card, Col, Form, Modal, Nav, Row, Tab } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom";
 import { Table } from 'react-bootstrap';
+import jwt_decode from "jwt-decode";
 
 import bitcoin from "../../../../images/coins/btc.png"
+import Cookies from "universal-cookie";
+import { getAllTrade } from "../../../../Redux/coins";
+import { useDispatch, useSelector } from "react-redux";
+import cryptoicons from "../../../../images/cryptoIcons/cryptoImg";
 
 const DataTable = ({ header, description, rows, columns, trade = false }) => {
     const [data, setData] = useState(
@@ -25,6 +30,7 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
         // navigate("/coin-details")
         setLargeModal(true)
     }
+    
 
     // Active data
     const chageData = (frist, sec) => {
@@ -41,6 +47,29 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
         setData(document.querySelectorAll("#market_wrapper tbody tr"));
         //chackboxFun();
     }, [test]);
+    const dispatch = useDispatch()
+    const cookies = new Cookies();
+	const token = cookies.get("token");
+	const user = jwt_decode(token);
+	const id = user.id;
+
+    const requests = useSelector(state => state.coinReducer);
+    console.log(requests, "requests from port folio");
+
+    const getData = async () => {
+        let body={
+            user_id:id
+        }
+        console.log(body, "body from portfolio");  
+		const res = await dispatch(getAllTrade(body));
+		console.log(res, "res from portfolio");
+        
+    }
+
+    useEffect(() => {
+        getData()
+    }, [])
+
 
 
     // Active pagginarion
@@ -116,25 +145,25 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
 
                                 </thead>
                                 <tbody >
-                                    {sortData(rows, sortD.columnName, sortD.sortType).map((item, index) => (
+                                    {sortData(requests.tradeData, sortD.columnName, sortD.sortType).map((item, index) => (
                                         <tr key={index} >
                                             <td style={{width:'30%'}}>
                                                 <div className="market-title d-flex align-items-center "  >
-                                                    <img src={bitcoin} width="12%" />
+                                                    <img src={cryptoicons[item.crypto_symbol]} width="12%" />
                                                     <Col>
                                                         <h5 className="mb-0 ms-2">
-                                                            {item.title}
+                                                            {item.crypto_name}
                                                         </h5>
                                                         <span className="text-muted ms-2" >
-                                                            {item.markets}
+                                                            {item.crypto_symbol}
                                                         </span>
                                                     </Col>
                                                 </div>
                                                 
                                             </td>
-                                            <td className="text-center" >{item.price}</td>
-                                            <td className={`text-center`} style={{ color: item.change > 0 ? "green" : "red",  }}>{item.change}%</td>
-                                            <td className="text-center">{item.open}</td>
+                                            <td className="text-center" >{item.trade}</td>
+                                            <td className={`text-center`} style={{ color: item.change > 0 ? "green" : "red",  }}>{item.purchase_units}%</td>
+                                            <td className="text-center">{item.crypto_purchase_price}</td>
                                             <td className={`text-center`} style={{ color: item.pl > 0 ? "green" : "red", }}>{item.pl}</td>
 
                                         </tr>

@@ -2,12 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../services/AxiosInstance";
 import { successMessage, errorMessage } from "../utils/message";
 import Cookies from "universal-cookie";
+import cryptoicons from "../../src/images/cryptoIcons/cryptoImg";
 const cookies = new Cookies();
 const initialState = {
   
   isloading: false, 
   data: [{}],
   coinData: [{}],
+  tradeData: [{}],
 };
 // get requests
 // export const getUserWallet = createAsyncThunk(
@@ -30,11 +32,27 @@ export const getAllCoin = createAsyncThunk("getAllCoin", async () => {
     const res = await axiosInstance.get(`/coinmarket`);
     if (res.status === 200) {
       console.log(res.data , "coin data");
+      const filterData= res.data.filter(item => cryptoicons[item.symbol])
+      return filterData;
+      //return res.data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// get all trade
+export const getAllTrade = createAsyncThunk("getAllTrade", async (postData) => {
+  try {
+    const res = await axiosInstance.get(`/api/activetrade/${postData.user_id}}`);
+    if (res.status === 200) {
+      console.log(res.data , "trade data");
       return res.data;
     }
   } catch (err) {
     console.log(err);
   }
+  
 });
 
 // get requests
@@ -203,6 +221,20 @@ export const coinReducer = createSlice({
       state.isloading = false;
       console.log("rejected", action);
     },
+
+    [getAllTrade.fulfilled]: (state, action) => {
+      state.isloading = false;
+      state.tradeData = action.payload;
+      console.log("action.payload for portfolio", action.payload);
+    },
+    [getAllTrade.pending]: (state, action) => {
+      state.isloading = true;
+    },
+    [getAllTrade.rejected]: (state, action) => {
+      state.isloading = false;
+      console.log("rejected", action);
+    },
+    
 
 
 
