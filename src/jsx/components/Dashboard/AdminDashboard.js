@@ -53,11 +53,11 @@ const AdminDashboard = () => {
 	const requests = useSelector(state => state.coinReducer);
 
 const filterData =(data, type) => {
-	const filteredData = data.filter((item) => item.status === type);
+	const filteredData = data?.filter((item) => item.status === type);
 	return filteredData;
 };
 const filterDataofWithdraw =(data, type) => {
-	const filteredData = data.filter((item) => item.status === type);
+	const filteredData = data?.filter((item) => item.status === type);
 	return filteredData;
 };
 

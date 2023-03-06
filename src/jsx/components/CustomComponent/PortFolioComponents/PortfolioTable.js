@@ -74,8 +74,31 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
         let body={
             user_id:id
         }
-        const res = dispatch(getAllTrade(body));
-       // getData()
+        const resp = dispatch(getAllTrade(body)).then((res) => {
+            console.log(res, "res from portfolio");
+            const result = Object.values(res?.payload?.reduce((acc, cur) => {
+                const key = cur.crypto_symbol;
+                if (!acc[key]) {
+                  acc[key] = { crypto_symbol: cur.crypto_symbol, trade : cur.trade, Count: 1, total_trade: cur.trade,admin_profit:cur.admin_profit,crypto_name:cur.crypto_name,crypto_purchase_price:cur.crypto_purchase_price,id:cur.id,invested_date:cur.invested_date,investment:cur.investment,purchase_units:cur.purchase_units,stop_loss:cur.stop_loss,take_profit:cur.take_profit,user_id:cur.user_id};
+                } else {
+                  acc[key].investment += cur.investment;
+                  acc[key].purchase_units += cur.purchase_units;
+                  acc[key].Count++;
+                  acc[key].total_trade += cur.trade;
+                }
+             
+              return acc;
+            }, {})).map((obj) => {
+                  obj.trade = obj.total_trade / obj.Count;
+                  delete obj.total_trade;
+                  delete obj.Count;
+                  return obj;
+                });
+                setReduceData(result)
+                console.log(result, "reduce from portfolio");
+
+        });
+        //getData()
     }, [])
 
     const handleClick = (item) => {
@@ -120,26 +143,7 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
     //     return obj;
     //   });
     useEffect(() => {
-        const result = Object.values(requests?.tradeData?.reduce((acc, cur) => {
-            const key = cur.crypto_symbol;
-            if (!acc[key]) {
-              acc[key] = { crypto_symbol: cur.crypto_symbol, trade : cur.trade, Count: 1, total_trade: cur.trade,admin_profit:cur.admin_profit,crypto_name:cur.crypto_name,crypto_purchase_price:cur.crypto_purchase_price,id:cur.id,invested_date:cur.invested_date,investment:cur.investment,purchase_units:cur.purchase_units,stop_loss:cur.stop_loss,take_profit:cur.take_profit,user_id:cur.user_id};
-            } else {
-              acc[key].investment += cur.investment;
-              acc[key].purchase_units += cur.purchase_units;
-              acc[key].Count++;
-              acc[key].total_trade += cur.trade;
-            }
-         
-          return acc;
-        }, {})).map((obj) => {
-              obj.trade = obj.total_trade / obj.Count;
-              delete obj.total_trade;
-              delete obj.Count;
-              return obj;
-            });
-            setReduceData(result)
-      console.log(result, "reduce from portfolio");
+      //console.log(result, "reduce from portfolio");
     }, [])
 
     // Active pagginarion
@@ -178,10 +182,18 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
         });
     };
     return (
+        <>
+        {clicked && <Button onClick={() => setClicked(false)} variant="link" size="lg" style={{
+            //make it into left
+            
+           
+           marginLeft : "-45%",
+            
+        
+        }}>Back</Button>}       
         <div className="col-xl-12"> 
-        {clicked && <Button onClick={() => setClicked(false)} variant="link" size="lg">Back</Button>}       
-                    {!clicked &&
-                    <div className="card">
+                    {clicked === false?(
+                        <div className="card">
                     <div className="card-header border-0">
                         <Col xl={12}>
                             <Row><h3>{header}</h3></Row>
@@ -253,14 +265,14 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
                                 <div
                                     className="dataTables_paginate paging_simple_numbers mb-0"
                                     id="application-tbl1_paginate"
-                                >
+                                    >
                                     <Link
                                         className="paginate_button previous "
                                         onClick={() =>
                                             activePag.current > 0 &&
                                             onClick(activePag.current - 1)
                                         }
-                                    >
+                                        >
                                         <i className="fa fa-angle-double-left" ></i>
                                     </Link>
                                     <span>
@@ -283,7 +295,7 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
                                             activePag.current + 1 < paggination.length &&
                                             onClick(activePag.current + 1)
                                         }
-                                    >
+                                        >
                                         <i className="fa fa-angle-double-right" ></i>
                                     </Link>
                                 </div>
@@ -293,8 +305,8 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
                     </div>
                     </div>
                     </div>
-                }
-                 <div className="card">
+                ):(
+                    <div className="card" >
                 <div className="card-header border-0">
                     <Col xl={12}>
                         <Row><h3>{header}</h3></Row>
@@ -324,7 +336,7 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
 
                                             </th>
 
-                                        ))}
+))}
 
                                     </tr>
 
@@ -405,8 +417,10 @@ const DataTable = ({ header, description, rows, columns, trade = false }) => {
                         </div>
                         </div>
                     </div>       
-            </div>
+                    </div>)}
+                 
         </div>
+        </>
     )
 }
 
