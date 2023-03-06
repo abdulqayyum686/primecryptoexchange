@@ -10,7 +10,8 @@ import DataDepositTable from '../CustomComponent/DepositTable';
 import ReactApexChart from 'react-apexcharts';
 import WidgetChartIndex3 from './Index3/WidgetChartIndex3';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllDepositRequest } from '../../../Redux/coins';
+import { getAllDepositRequest, getAllWithDrawRequest } from '../../../Redux/coins';
+import DataWithdrawTable from '../CustomComponent/WithdrawTable';
 
 const rows = [
 	{sno:"abc",datetime:Date.now(),status:'up',type:'abc',amount:123 },
@@ -55,6 +56,17 @@ const filterData =(data, type) => {
 	const filteredData = data.filter((item) => item.status === type);
 	return filteredData;
 };
+const filterDataofWithdraw =(data, type) => {
+	const filteredData = data.filter((item) => item.status === type);
+	return filteredData;
+};
+
+  const getDataofWithdraw = async () => {
+	const res = await dispatch(getAllWithDrawRequest());
+	console.log(res);
+	  }
+
+
 	 const getData = async () => {
 		const res = await dispatch(getAllDepositRequest());
 		
@@ -63,6 +75,7 @@ const filterData =(data, type) => {
     }
 	useEffect(() => {
 		getData();
+		getDataofWithdraw();
 	}, []);
 	var state = {
 		series: [
@@ -275,6 +288,11 @@ const filterData =(data, type) => {
 					<Row>
 						<Col xl="8">
 							<DataDepositTable header="Deposit Request" rows={filterData(requests.data,"pending")} columns={Depositcolumns} />
+						</Col>
+					</Row>
+					<Row>
+						<Col xl="8">
+							<DataWithdrawTable header="Withdraw Request" rows={filterDataofWithdraw(requests.withdrawRequest,"pending")} columns={Depositcolumns} />
 						</Col>
 					</Row>
 				</div>

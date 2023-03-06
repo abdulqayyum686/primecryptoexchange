@@ -16,7 +16,7 @@ const Portfolio = () => {
     ]
     return (
         <>
-            <Col xl="12">
+            <Col xl="12">   
                 <Row>
                     <PageTitle activeMenu="Portfolio" motherMenu="Home" />
                 </Row>

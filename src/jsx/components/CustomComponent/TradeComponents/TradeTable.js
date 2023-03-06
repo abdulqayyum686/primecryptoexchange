@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { Button, Card, Col, Dropdown, Form, Modal, Nav, Row, Tab } from "react-bootstrap"
+import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { Table } from 'react-bootstrap';
 import cryptoicons from "../../../../images/cryptoIcons/cryptoImg";
+import { InfinitySpin } from "react-loader-spinner";
 
 import bitcoin from "../../../../images/coins/btc.png"
 import TradeOrderForm from "./TradeOrderForm";
@@ -55,6 +57,7 @@ const DataTable = ( ) => {
         console.log("body of trade",body);
        const res= dispatch(createTrade(body));
        console.log("res of trade",res);
+        setLargeModal(false)   
     }
     
     const buyNow = (value) => {
@@ -187,8 +190,8 @@ console.log("modalCurrentData",modalCurrentData);
 
     },[])
     return (
-        
         <div className="col-xl-12">
+            <ToastContainer />
             <div className="card">
                 <div className="card-header border-0">
                     <Col xl={12}>
@@ -199,7 +202,12 @@ console.log("modalCurrentData",modalCurrentData);
                     </Col>
                 </div>
                 <div className="card-body pt-0">
-                    <div className="table-responsive dataTablemarket">
+                    {requests.isloading && <InfinitySpin width='200' color="#4fa94d" />}
+                        {/* <InfinitySpin 
+                        width='200'
+                        color="#4fa94d"
+                      /> */}
+                        <div className="table-responsive dataTablemarket">
                         <div id="market_wrapper" className="dataTables_wrapper no-footer">
                             <table className="table dataTable  shadow-hover display" style={{ minWidth: "845px" }}>
                                 <thead>
@@ -317,6 +325,8 @@ console.log("modalCurrentData",modalCurrentData);
 
                         </div>
                     </div>
+                    
+                     
                 </div>
             </div>
             <Modal

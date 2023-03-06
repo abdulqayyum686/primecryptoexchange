@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { postDepositAction } from '../../../store/actions/DepositAction';
 import { Button } from 'react-bootstrap';
 import { depositAmount } from '../../../Redux/coins';
+import { ToastContainer, toast } from "react-toastify";
 
 
 const DepositOrderForm = () => {
@@ -37,6 +38,9 @@ const DepositOrderForm = () => {
 
 		const res =	dispatch(depositAmount(body))
 		console.log(res, "res ");
+
+
+
 	}
 	return (
 		<>
@@ -52,7 +56,9 @@ const DepositOrderForm = () => {
 				</div>
 				<div className="text-center  d-flex justify-content-center " style={{ marginTop: '2rem', marginLeft:'1rem' }}>
 					<Button type="submit" className="btn w-50 text-white" style={{backgroundColor:'#3eacff'}}>Deposit</Button>
+
 				</div>
+				<ToastContainer />
 			</form>
 		</>
 	)

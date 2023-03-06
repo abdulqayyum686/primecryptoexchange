@@ -8,6 +8,7 @@ const initialState = {
   
   isloading: false, 
   data: [{}],
+  withdrawRequest: [{}],
   coinData: [{}],
   tradeData: [{}],
 };
@@ -31,12 +32,14 @@ export const getAllCoin = createAsyncThunk("getAllCoin", async () => {
   try {
     const res = await axiosInstance.get(`/coinmarket`);
     if (res.status === 200) {
+      successMessage("Successfully get All Coin !");
       console.log(res.data , "coin data");
       const filterData= res.data.filter(item => cryptoicons[item.symbol])
       return filterData;
       //return res.data;
     }
   } catch (err) {
+    errorMessage(err.response.data || err.message);
     console.log(err);
   }
 });
@@ -47,9 +50,11 @@ export const getAllTrade = createAsyncThunk("getAllTrade", async (postData) => {
     const res = await axiosInstance.get(`/api/activetrade/${postData.user_id}}`);
     if (res.status === 200) {
       console.log(res.data , "trade data");
+      successMessage("Successfully get All Trade !");
       return res.data;
     }
   } catch (err) {
+    errorMessage(err.response.data || err.message);
     console.log(err);
   }
   
@@ -62,9 +67,27 @@ export const getAllTrade = createAsyncThunk("getAllTrade", async (postData) => {
       try {
         const res = await axiosInstance.get(`/api/deposit/`);
         if (res.status === 200) {
+          successMessage("Successfully get All Deposit Request !");
           return res.data;
         }
       } catch (err) {
+        errorMessage(err.response.data || err.message);
+        console.log(err);
+      }
+    }
+  );
+
+  export const getAllWithDrawRequest = createAsyncThunk(
+    "getAllWithdrawRequest",
+    async () => {
+      try {
+        const res = await axiosInstance.get(`/api/withdraw/`);
+        if (res.status === 200) {
+          successMessage("Successfully get All Withdraw Request !");
+          return res.data;
+        }
+      } catch (err) {
+        errorMessage(err.response.data || err.message);
         console.log(err);
       }
     }
@@ -80,13 +103,16 @@ export const getAllTrade = createAsyncThunk("getAllTrade", async (postData) => {
         const res = await axiosInstance.put(`/api/deposit/${postData.id}`, reqBody);
         if (res.status === 200) {
           console.log(res.data);
+          successMessage("Deposit Status Updated Successfully !");
           return res.data;
         }
       } catch (err) {
         console.log(err);
+        errorMessage(err.response.data || err.message);
       }
     }
   );
+
 
 
 // @desc    Deposit Amount
@@ -98,7 +124,7 @@ export const getAllTrade = createAsyncThunk("getAllTrade", async (postData) => {
         const res = await axiosInstance.post(`/api/deposit/`, postData);
         console.log(res);
         if (res.data) { 
-          successMessage("Deposit Successfully !");
+          successMessage("Deposit request sent Successfully !");
         }
         return res.data;
       } catch (err) {
@@ -111,6 +137,27 @@ export const getAllTrade = createAsyncThunk("getAllTrade", async (postData) => {
       }
     }
   );
+  export const withdrawAmount = createAsyncThunk(
+    "withdrawAmount",
+    async (postData) => {
+      try {
+        const res = await axiosInstance.post(`/api/withdraw/`, postData);
+        console.log(res);
+        if (res.data) { 
+          successMessage("Withdraw request sent Successfully !");
+        }
+        return res.data;
+      } catch (err) {
+
+        errorMessage(err.response.data || err.message);
+        //reject with asyncthunk
+        return Promise.reject(err.response.data || err.message);
+    
+        
+      }
+    }
+  );
+
 
 
   // create trade
@@ -169,7 +216,16 @@ export const coinReducer = createSlice({
           state.isloading = false;
           console.log("rejected", action);
         },
-
+        [withdrawAmount.fulfilled]: (state, action) => {
+          state.isloading = false;
+        },
+        [withdrawAmount.pending]: (state, action) => {
+          state.isloading = true;
+        },
+        [withdrawAmount.rejected]: (state, action) => {
+          state.isloading = false;
+          console.log("rejected", action);
+        },
         [getAllDepositRequest.fulfilled]: (state, action) => {
           state.isloading = false;
           state.data = action.payload;
@@ -183,6 +239,19 @@ export const coinReducer = createSlice({
           console.log("rejected", action);
         },
 
+        [getAllWithDrawRequest.fulfilled]: (state, action) => {
+          state.isloading = false;
+          state.withdrawRequest = action.payload;
+          console.log("action.payload", action.payload);
+        },
+        [getAllWithDrawRequest.pending]: (state, action) => {
+          state.isloading = true;
+        },
+        [getAllWithDrawRequest.rejected]: (state, action) => {
+          state.isloading = false;
+          console.log("rejected", action);
+        },
+        
         [updateDepositStatus.fulfilled]: (state, action) => {
           state.isloading = false;
          // state.data = action.payload;
