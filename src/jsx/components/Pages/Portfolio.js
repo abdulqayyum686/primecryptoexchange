@@ -12,7 +12,6 @@ const Portfolio = () => {
         { label: 'Units', columnName: 'sort', sort: false },
         { label: 'Open', columnName: 'open', sort: true },
         { label: 'P/L($)', columnName: 'pl', sort: false },
-
     ]
     return (
         <>
